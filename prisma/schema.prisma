@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AnalysisStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id        Int                  @id @default(autoincrement())
+  email     String               @unique
+  password  String
+  name      String
+  role      Role                 @default(USER)
+  records   ConsultationRecord[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+}
+
+model ConsultationRecord {
+  id              Int            @id @default(autoincrement())
+  userId          Int
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audioFileName   String
+  audioFilePath   String
+  audioMimeType   String
+  audioFileSize   Int
+  audioDuration   Int?
+  analysisStatus  AnalysisStatus @default(PENDING)
+  transcriptText  String?        @db.Text
+  callType        String
+  registrationNo  String
+  receivedAt      DateTime       @default(now())
+  channel         String
+  questionerType  String
+  institutionName String
+  questionerName  String
+  phoneNumber     String
+  mainCategory    String
+  subCategory     String
+  inquirySummary  String         @db.Text
+  answerSummary   String         @db.Text
+  manager         String
+  status          String
+  priority        String
+  completedAt     DateTime?
+  processingTime  Int?
+  aiConfidence    Float?
+  errorMessage    String?        @db.Text
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([analysisStatus])
+  @@index([createdAt])
+}
+
+model CategoryRule {
+  id           Int      @id @default(autoincrement())
+  mainCategory String
+  subCategory  String
+  keyword      String
+  priority     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([mainCategory])
+  @@index([keyword])
+}

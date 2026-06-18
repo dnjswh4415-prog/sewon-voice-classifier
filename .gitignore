@@ -1,0 +1,8 @@
+﻿node_modules
+.next
+.env
+uploads/audio/*
+!uploads/audio/.gitkeep
+.DS_Store
+*.log
+tsconfig.tsbuildinfo
